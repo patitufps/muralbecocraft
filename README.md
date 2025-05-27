@@ -1,5 +1,5 @@
-# Blog do Servidor de Minecraft (Full-Stack)
-# Este projeto é um blog completo para um servidor de Minecraft, permitindo que usuários se registrem, façam login e criem postagens com ou sem imagens.
+Blog do Servidor de Minecraft (Full-Stack)
+Este projeto é um blog completo para um servidor de Minecraft, permitindo que usuários se registrem, façam login e criem postagens com ou sem imagens.
 
 Tecnologias Utilizadas
 Frontend:

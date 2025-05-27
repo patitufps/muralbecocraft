@@ -1,161 +1,333 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-    color: #333;
-}
+// backend/server.js
+// Arquivo principal do servidor Node.js
+require('dotenv').config({ path: './.env' }); // Carrega as variáveis de ambiente do arquivo .env
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors'); // Middleware para permitir requisições de diferentes origens (frontend)
+const path = require('path'); // Módulo para lidar com caminhos de arquivos
 
-header {
-    background-color: #4CAF50;
-    color: white;
-    padding: 20px 0;
-    text-align: center;
-}
+// Importa as rotas da API
+const authRoutes = require('./routes/auth');
+const postRoutes = require('./routes/posts');
 
-header h1 {
-    margin: 0;
-    font-size: 2.5em;
-}
+const app = express();
+const PORT = process.env.PORT || 3000; // Define a porta do servidor, padrão 3000
 
-header p {
-    font-size: 1.2em;
-}
+// Conectar ao MongoDB
+// A URI de conexão é obtida do arquivo .env
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log('Conectado ao MongoDB')) // Mensagem de sucesso na conexão
+    .catch(err => console.error('Erro ao conectar ao MongoDB:', err)); // Mensagem de erro
 
-main {
-    padding: 20px;
-    max-width: 960px;
-    margin: 20px auto;
-    background-color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-}
+// Middlewares
+app.use(cors()); // Habilita o CORS para todas as rotas, permitindo que o frontend se conecte
+app.use(express.json()); // Middleware para parsear requisições com corpo JSON
 
-section {
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #eee;
-}
+// Rotas da API
+// Todas as rotas de autenticação começarão com /api/auth
+app.use('/api/auth', authRoutes);
+// Todas as rotas de postagens começarão com /api/posts
+app.use('/api/posts', postRoutes);
 
-section:last-child {
-    border-bottom: none;
-}
+// Servir arquivos estáticos do frontend (opcional, se você quiser hospedar frontend e backend juntos)
+// Se você for usar GitHub Pages para o frontend, pode comentar ou remover esta seção.
+/*
+app.use(express.static(path.join(__dirname, '../frontend')));
 
-h2 {
-    color: #333;
-    border-bottom: 2px solid #4CAF50;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-}
+// Para qualquer outra rota não definida, serve o index.html do frontend
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../frontend', 'index.html'));
+});
+*/
 
-/* Estilos para o formulário de postagem */
-.form-group {
-    margin-bottom: 15px;
-}
+// Iniciar o servidor
+app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`); // Confirma que o servidor está ativo
+});
 
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
+```javascript
+// backend/models/User.js
+// Modelo Mongoose para o usuário
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs'); // Biblioteca para criptografar senhas
 
-.form-group input[type="text"],
-.form-group textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box; /* Garante que padding não aumenta a largura total */
-}
+const UserSchema = new mongoose.Schema({
+    username: {
+        type: String,
+        required: true, // Campo obrigatório
+        unique: true,   // Nome de usuário deve ser único
+        trim: true,     // Remove espaços em branco antes e depois
+        minlength: 3    // Mínimo de 3 caracteres
+    },
+    password: {
+        type: String,
+        required: true, // Campo obrigatório
+        minlength: 6    // Mínimo de 6 caracteres
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now // Data de criação padrão
+    }
+});
 
-.form-group textarea {
-    resize: vertical; /* Permite redimensionar verticalmente */
-}
+// Middleware Mongoose que executa antes de salvar um documento User
+// Usado para criptografar a senha antes de armazená-la no banco de dados
+UserSchema.pre('save', async function(next) {
+    // Só criptografa a senha se ela foi modificada (ou é um novo usuário)
+    if (!this.isModified('password')) {
+        return next();
+    }
+    // Gera um "salt" (string aleatória) para adicionar à senha antes de criptografar
+    const salt = await bcrypt.genSalt(10); // 10 é um bom custo de hash
+    // Criptografa a senha com o salt
+    this.password = await bcrypt.hash(this.password, salt);
+    next(); // Continua para a próxima operação (salvar)
+});
 
-button[type="submit"] {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s ease;
-}
+// Método personalizado para o modelo User para comparar senhas
+// Usado durante o login para verificar se a senha fornecida corresponde à senha criptografada
+UserSchema.methods.matchPassword = async function(enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password); // Compara a senha fornecida com a criptografada
+};
 
-button[type="submit"]:hover {
-    background-color: #45a049;
-}
+module.exports = mongoose.model('User', UserSchema); // Exporta o modelo User
+```javascript
+// backend/models/Post.js
+// Modelo Mongoose para as postagens do blog
+const mongoose = require('mongoose');
 
-/* Estilos para as postagens do blog */
-.mural-post {
-    background-color: #e9ffe9;
-    border: 1px solid #d4edda;
-    border-radius: 5px;
-    padding: 15px;
-    margin-bottom: 15px;
-}
+const PostSchema = new mongoose.Schema({
+    title: {
+        type: String,
+        required: true, // Título é obrigatório
+        trim: true      // Remove espaços em branco
+    },
+    content: {
+        type: String,
+        required: true  // Conteúdo é obrigatório
+    },
+    author: {
+        type: String, // Nome do autor da postagem (poderia ser uma referência a um User ID)
+        required: true
+    },
+    imageUrl: {
+        type: String, // URL da imagem anexada à postagem (armazenada no Cloudinary)
+        default: ''   // Valor padrão vazio se não houver imagem
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now // Data de criação da postagem
+    }
+});
 
-.mural-post h3 {
-    color: #28a745;
-    margin-top: 0;
-}
+module.exports = mongoose.model('Post', PostSchema); // Exporta o modelo Post
+```javascript
+// backend/middleware/auth.js
+// Middleware para proteger rotas (verificar autenticação JWT)
+const jwt = require('jsonwebtoken'); // Biblioteca para JSON Web Tokens
+const User = require('../models/User'); // Importa o modelo de usuário
 
-.mural-post p {
-    line-height: 1.6;
-}
+// Middleware de proteção de rota
+const protect = async (req, res, next) => {
+    let token;
 
-.post-data {
-    font-size: 0.9em;
-    color: #666;
-    display: block;
-    margin-top: 10px;
-    text-align: right;
-}
+    // Verifica se o cabeçalho de autorização existe e começa com 'Bearer'
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        try {
+            // Extrai o token do cabeçalho (formato: "Bearer TOKEN_AQUI")
+            token = req.headers.authorization.split(' ')[1];
 
-ul {
-    list-style-type: none;
-    padding: 0;
-}
+            // Verifica e decodifica o token usando a chave secreta do JWT
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-ul li {
-    background-color: #f9f9f9;
-    margin-bottom: 8px;
-    padding: 10px;
-    border-left: 5px solid #4CAF50;
-}
+            // Encontra o usuário no banco de dados pelo ID contido no token
+            // .select('-password') exclui a senha do objeto de usuário retornado
+            req.user = await User.findById(decoded.id).select('-password');
 
-ul li a {
-    color: #007bff;
-    text-decoration: none;
-}
+            // Se o usuário não for encontrado, o token é inválido
+            if (!req.user) {
+                return res.status(401).json({ message: 'Não autorizado, token inválido (usuário não encontrado)' });
+            }
+            next(); // Se tudo estiver ok, passa para o próximo middleware/rota
+        } catch (error) {
+            console.error(error);
+            res.status(401).json({ message: 'Não autorizado, token falhou ou expirou' });
+        }
+    }
 
-ul li a:hover {
-    text-decoration: underline;
-}
+    // Se não houver token no cabeçalho
+    if (!token) {
+        res.status(401).json({ message: 'Não autorizado, nenhum token fornecido' });
+    }
+};
 
-.galeria-fotos {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 15px;
-}
+module.exports = { protect }; // Exporta o middleware
+```javascript
+// backend/routes/auth.js
+// Rotas para autenticação de usuário (registro e login)
+const express = require('express');
+const router = express.Router();
+const bcrypt = require('bcryptjs'); // Para comparar senhas (já criptografadas no modelo)
+const jwt = require('jsonwebtoken'); // Para criar tokens JWT
+const User = require('../models/User'); // Importa o modelo de usuário
 
-.galeria-fotos img {
-    width: 100%;
-    height: auto;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease-in-out;
-}
+// Função auxiliar para gerar um token JWT
+const generateToken = (id) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET, {
+        expiresIn: '1h', // Token expira em 1 hora (pode ser ajustado)
+    });
+};
 
-.galeria-fotos img:hover {
-    transform: scale(1.03);
-}
+// @route POST /api/auth/register
+// @desc Registrar um novo usuário
+// @access Public (qualquer um pode acessar)
+router.post('/register', async (req, res) => {
+    const { username, password } = req.body; // Pega nome de usuário e senha do corpo da requisição
 
-footer {
-    text-align: center;
-    padding: 20px;
-    background-color: #333;
-    color: white;
-    margin-top: 30px;
-}
+    // Validação básica de entrada
+    if (!username || !password) {
+        return res.status(400).json({ message: 'Por favor, insira todos os campos.' });
+    }
+
+    try {
+        // Verifica se o nome de usuário já existe
+        let user = await User.findOne({ username });
+        if (user) {
+            return res.status(400).json({ message: 'Nome de usuário já existe.' });
+        }
+
+        // Cria um novo usuário
+        user = new User({
+            username,
+            password // A senha será criptografada pelo middleware 'pre-save' no modelo User
+        });
+
+        await user.save(); // Salva o novo usuário no banco de dados
+
+        res.status(201).json({ message: 'Usuário registrado com sucesso!' }); // Retorna sucesso
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro no servidor durante o registro.' });
+    }
+});
+
+// @route POST /api/auth/login
+// @desc Autenticar usuário e retornar token JWT
+// @access Public (qualquer um pode acessar)
+router.post('/login', async (req, res) => {
+    const { username, password } = req.body; // Pega nome de usuário e senha do corpo da requisição
+
+    // Validação básica de entrada
+    if (!username || !password) {
+        return res.status(400).json({ message: 'Por favor, insira nome de usuário e senha.' });
+    }
+
+    try {
+        // Encontra o usuário pelo nome de usuário
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(400).json({ message: 'Credenciais inválidas.' }); // Usuário não encontrado
+        }
+
+        // Compara a senha fornecida com a senha criptografada no banco de dados
+        const isMatch = await user.matchPassword(password);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Credenciais inválidas.' }); // Senha incorreta
+        }
+
+        // Se as credenciais estiverem corretas, gera um token JWT
+        res.json({
+            message: 'Login bem-sucedido!',
+            token: generateToken(user._id), // Gera e retorna o token
+            username: user.username // Retorna o nome de usuário para o frontend
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro no servidor durante o login.' });
+    }
+});
+
+module.exports = router; // Exporta as rotas de autenticação
+```javascript
+// backend/routes/posts.js
+// Rotas para as postagens do blog (obter e criar)
+const express = require('express');
+const router = express.Router();
+const { protect } = require('../middleware/auth'); // Importa o middleware de proteção
+const Post = require('../models/Post'); // Importa o modelo de postagem
+const multer = require('multer'); // Middleware para lidar com upload de arquivos
+const cloudinary = require('cloudinary').v2; // SDK do Cloudinary
+const { CloudinaryStorage } = require('multer-storage-cloudinary'); // Armazenamento do Multer para Cloudinary
+
+// Configuração do Cloudinary
+// As credenciais são obtidas do arquivo .env
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// Configuração do armazenamento do Multer para usar o Cloudinary
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'blog-minecraft-images', // Define a pasta no Cloudinary onde as imagens serão salvas
+        format: async (req, file) => 'png', // Formato da imagem (pode ser dinâmico ou fixo)
+        public_id: (req, file) => `blog-image-${Date.now()}-${file.originalname.split('.')[0]}`, // ID público único para a imagem
+    },
+});
+
+const upload = multer({ storage: storage }); // Inicializa o Multer com a configuração do Cloudinary
+
+// @route GET /api/posts
+// @desc Obter todas as postagens
+// @access Public (qualquer um pode ver as postagens)
+router.get('/', async (req, res) => {
+    try {
+        // Busca todas as postagens e as ordena pela data de criação (mais recentes primeiro)
+        const posts = await Post.find().sort({ createdAt: -1 });
+        res.json(posts); // Retorna as postagens como JSON
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao buscar postagens.' });
+    }
+});
+
+// @route POST /api/posts
+// @desc Criar uma nova postagem com imagem (opcional)
+// @access Private (requer autenticação)
+// 'upload.single('image')' é o middleware do Multer que processa o upload de um único arquivo
+// O nome 'image' deve corresponder ao 'name' do input type="file" no frontend
+router.post('/', protect, upload.single('image'), async (req, res) => {
+    const { title, content } = req.body; // Pega título e conteúdo do corpo da requisição
+    const author = req.user.username; // Pega o nome de usuário do objeto req.user (definido pelo middleware 'protect')
+
+    // Validação básica
+    if (!title || !content) {
+        return res.status(400).json({ message: 'Título e conteúdo são obrigatórios.' });
+    }
+
+    let imageUrl = '';
+    // Se um arquivo de imagem foi enviado, pega a URL do Cloudinary
+    if (req.file) {
+        imageUrl = req.file.path; // 'path' contém a URL segura da imagem no Cloudinary
+    }
+
+    try {
+        // Cria uma nova instância de Post
+        const newPost = new Post({
+            title,
+            content,
+            author,
+            imageUrl
+        });
+
+        const post = await newPost.save(); // Salva a nova postagem no banco de dados
+        res.status(201).json(post); // Retorna a postagem criada com status 201 (Created)
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao criar postagem.' });
+    }
+});
+
+module.exports = router; // Exporta as rotas de postagens

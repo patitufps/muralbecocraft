@@ -30,24 +30,42 @@ Cloudinary (Serviço de armazenamento e gerenciamento de imagens em nuvem)
 
 Estrutura do Projeto
 meu-blog-minecraft/
-├── frontend/
-│   ├── index.html      # Página principal do blog (inclui login/registro e postagem)
-│   ├── style.css       # Estilos CSS para o frontend
-│   └── script.js       # Lógica JavaScript do frontend
-├── backend/
-│   ├── server.js       # Ponto de entrada do servidor Node.js
-│   ├── package.json    # Dependências e scripts do Node.js
-│   ├── .env            # Variáveis de ambiente (NÃO ENVIAR PARA O GITHUB!)
-│   ├── models/
-│   │   ├── User.js     # Modelo Mongoose para usuários
-│   │   └── Post.js     # Modelo Mongoose para postagens
-│   ├── routes/
-│   │   ├── auth.js     # Rotas de autenticação (registro, login)
-│   │   └── posts.js    # Rotas para postagens (obter, criar)
-│   └── middleware/
-│       └── auth.js     # Middleware para proteção de rotas (verificação JWT)
-├── .gitignore          # Arquivos e pastas a serem ignorados pelo Git
-├── README.md           # Este arquivo
+
+frontend/
+
+index.html - Página principal do blog (inclui login/registro e postagem)
+
+style.css - Estilos CSS para o frontend
+
+script.js - Lógica JavaScript do frontend
+
+backend/
+
+server.js - Ponto de entrada do servidor Node.js
+
+package.json - Dependências e scripts do Node.js
+
+.env - Variáveis de ambiente (NÃO ENVIAR PARA O GITHUB!)
+
+models/
+
+User.js - Modelo Mongoose para usuários
+
+Post.js - Modelo Mongoose para postagens
+
+routes/
+
+auth.js - Rotas de autenticação (registro, login)
+
+posts.js - Rotas para postagens (obter, criar)
+
+middleware/
+
+auth.js - Middleware para proteção de rotas (verificação JWT)
+
+.gitignore - Arquivos e pastas a serem ignorados pelo Git
+
+README.md - Este arquivo
 
 Configuração e Execução (Localmente)
 Siga estas etapas para configurar e rodar o projeto em sua máquina local.

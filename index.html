@@ -3,28 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mural do Servidor de Minecraft</title>
+    <title>Blog do Servidor [Nome do Seu Servidor]</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>Mural do Servidor [Nome do Seu Servidor]</h1>
-        <p>Um espaço para anúncios, novidades e informações importantes!</p>
+        <h1>Blog do Servidor [Nome do Seu Servidor]</h1>
+        <p>Compartilhe suas ideias e novidades!</p>
     </header>
 
     <main>
-        <section id="anuncios">
-            <h2>Anúncios Recentes</h2>
-            <div class="mural-post">
-                <h3>Evento de Construção: Castelos Épicos!</h3>
-                <p>Data: 28/05/2025 | Horário: 19:00 BRT</p>
-                <p>Preparem seus blocos! Nosso próximo evento de construção será sobre castelos. Os 3 melhores castelos ganharão recompensas exclusivas!</p>
-                <span class="post-data">Publicado em: 27/05/2025</span>
-            </div>
-            <div class="mural-post">
-                <h3>Nova Regra: Respeito é Fundamental</h3>
-                <p>Lembrem-se, o respeito entre os jogadores é essencial para um ambiente divertido. Qualquer comportamento tóxico não será tolerado.</p>
-                <span class="post-data">Publicado em: 26/05/2025</span>
+        <section id="criar-post">
+            <h2>Criar Nova Publicação</h2>
+            <form id="postForm">
+                <div class="form-group">
+                    <label for="postTitle">Título:</label>
+                    <input type="text" id="postTitle" name="postTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="postAuthor">Seu Nome (Opcional):</label>
+                    <input type="text" id="postAuthor" name="postAuthor">
+                </div>
+                <div class="form-group">
+                    <label for="postContent">Conteúdo:</label>
+                    <textarea id="postContent" name="postContent" rows="10" required></textarea>
+                </div>
+                <button type="submit">Publicar</button>
+            </form>
+        </section>
+
+        <section id="posts-blog">
+            <h2>Publicações Recentes</h2>
+            <div id="postsContainer">
+                <div class="mural-post">
+                    <h3>Evento de Construção: Castelos Épicos!</h3>
+                    <p>Preparem seus blocos! Nosso próximo evento de construção será sobre castelos. Os 3 melhores castelos ganharão recompensas exclusivas!</p>
+                    <span class="post-data">Publicado por: Admin em: 27/05/2025</span>
+                </div>
+                <div class="mural-post">
+                    <h3>Nova Regra: Respeito é Fundamental</h3>
+                    <p>Lembrem-se, o respeito entre os jogadores é essencial para um ambiente divertido. Qualquer comportamento tóxico não será tolerado.</p>
+                    <span class="post-data">Publicado por: Admin em: 26/05/2025</span>
+                </div>
             </div>
         </section>
 
@@ -47,7 +67,7 @@
             </div>
         </section>
 
-        </main>
+    </main>
 
     <footer>
         <p>&copy; 2025 [Nome do Seu Servidor]. Todos os direitos reservados.</p>

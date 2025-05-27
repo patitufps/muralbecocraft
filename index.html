@@ -4,16 +4,352 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog do Servidor [Nome do Seu Servidor]</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos CSS para o blog */
+        body {
+            font-family: 'Inter', sans-serif; /* Usando Inter como sugerido */
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            position: relative;
+            border-bottom-left-radius: 8px; /* Cantos arredondados */
+            border-bottom-right-radius: 8px; /* Cantos arredondados */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.8em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        header p {
+            font-size: 1.3em;
+            margin-top: 5px;
+        }
+
+        header nav {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        header nav a, header nav button {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 5px; /* Cantos arredondados */
+            transition: background-color 0.3s ease;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        header nav a:hover, header nav button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        #usernameDisplay {
+            margin-left: 10px;
+            color: white;
+            font-weight: bold;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        main {
+            padding: 20px;
+            max-width: 960px;
+            margin: 20px auto;
+            background-color: white;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+            border-radius: 12px; /* Cantos arredondados */
+        }
+
+        section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        section:last-child {
+            border-bottom: none;
+        }
+
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+
+        /* Estilos para formulários (login, registro, postagem) */
+        .form-container {
+            background-color: #e9ffe9;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="password"],
+        .form-group input[type="file"],
+        .form-group textarea {
+            width: calc(100% - 20px); /* Ajusta para padding */
+            padding: 10px;
+            border: 1px solid #c8e6c9;
+            border-radius: 6px; /* Cantos arredondados */
+            box-sizing: border-box;
+            font-size: 1em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="password"]:focus,
+        .form-group input[type="file"]:focus,
+        .form-group textarea:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
+            outline: none;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px; /* Cantos arredondados */
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .toggle-form-link {
+            display: block;
+            margin-top: 15px;
+            text-align: center;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .toggle-form-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Estilos para as postagens do blog */
+        .mural-post {
+            background-color: #e9ffe9;
+            border: 1px solid #d4edda;
+            border-radius: 8px; /* Cantos arredondados */
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .mural-post:hover {
+            transform: translateY(-3px);
+        }
+
+        .mural-post h3 {
+            color: #28a745;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+
+        .mural-post p {
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .mural-post img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px; /* Cantos arredondados */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-data {
+            font-size: 0.9em;
+            color: #666;
+            display: block;
+            margin-top: 10px;
+            text-align: right;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 10px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+            padding: 12px;
+            border-left: 5px solid #4CAF50;
+            border-radius: 6px; /* Cantos arredondados */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        ul li a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .galeria-fotos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .galeria-fotos img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px; /* Cantos arredondados */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
+        }
+
+        .galeria-fotos img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            background-color: #333;
+            color: white;
+            margin-top: 30px;
+            border-top-left-radius: 8px; /* Cantos arredondados */
+            border-top-right-radius: 8px; /* Cantos arredondados */
+            box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Mensagens de feedback */
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            pointer-events: none; /* Permite cliques através da caixa */
+        }
+
+        .message-box.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
 </head>
 <body>
     <header>
         <h1>Blog do Servidor [Nome do Seu Servidor]</h1>
         <p>Compartilhe suas ideias e novidades!</p>
+        <nav>
+            <a href="#" id="loginLink">Login</a>
+            <button id="logoutBtn" style="display:none;">Sair</button>
+            <span id="usernameDisplay"></span>
+        </nav>
     </header>
 
     <main>
-        <section id="criar-post">
+        <section id="auth-section" class="form-container">
+            <div id="login-form-div">
+                <h2>Faça Login</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Nome de Usuário:</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Senha:</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit">Entrar</button>
+                    <a href="#" class="toggle-form-link" data-form="register">Ainda não tem conta? Cadastre-se aqui.</a>
+                </form>
+            </div>
+
+            <div id="register-form-div" style="display:none;">
+                <h2>Crie sua Conta</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="regUsername">Nome de Usuário:</label>
+                        <input type="text" id="regUsername" name="regUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword">Senha:</label>
+                        <input type="password" id="regPassword" name="regPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regConfirmPassword">Confirmar Senha:</label>
+                        <input type="password" id="regConfirmPassword" name="regConfirmPassword" required>
+                    </div>
+                    <button type="submit">Registrar</button>
+                    <a href="#" class="toggle-form-link" data-form="login">Já tem conta? Faça login aqui.</a>
+                </form>
+            </div>
+        </section>
+
+        <section id="criar-post" class="form-container" style="display:none;">
             <h2>Criar Nova Publicação</h2>
             <form id="postForm">
                 <div class="form-group">
@@ -21,8 +357,8 @@
                     <input type="text" id="postTitle" name="postTitle" required>
                 </div>
                 <div class="form-group">
-                    <label for="postAuthor">Seu Nome (Opcional):</label>
-                    <input type="text" id="postAuthor" name="postAuthor">
+                    <label for="postImage">Anexar Imagem (Opcional):</label>
+                    <input type="file" id="postImage" name="postImage" accept="image/*">
                 </div>
                 <div class="form-group">
                     <label for="postContent">Conteúdo:</label>
@@ -35,16 +371,7 @@
         <section id="posts-blog">
             <h2>Publicações Recentes</h2>
             <div id="postsContainer">
-                <div class="mural-post">
-                    <h3>Evento de Construção: Castelos Épicos!</h3>
-                    <p>Preparem seus blocos! Nosso próximo evento de construção será sobre castelos. Os 3 melhores castelos ganharão recompensas exclusivas!</p>
-                    <span class="post-data">Publicado por: Admin em: 27/05/2025</span>
-                </div>
-                <div class="mural-post">
-                    <h3>Nova Regra: Respeito é Fundamental</h3>
-                    <p>Lembrem-se, o respeito entre os jogadores é essencial para um ambiente divertido. Qualquer comportamento tóxico não será tolerado.</p>
-                    <span class="post-data">Publicado por: Admin em: 26/05/2025</span>
-                </div>
+                <p>Carregando publicações...</p>
             </div>
         </section>
 
@@ -61,9 +388,9 @@
         <section id="galeria">
             <h2>Galeria de Imagens</h2>
             <div class="galeria-fotos">
-                <img src="https://via.placeholder.com/300x200?text=Screenshot+1" alt="Screenshot 1">
-                <img src="https://via.placeholder.com/300x200?text=Screenshot+2" alt="Screenshot 2">
-                <img src="https://via.placeholder.com/300x200?text=Screenshot+3" alt="Screenshot 3">
+                <img src="https://placehold.co/300x200/4CAF50/FFFFFF?text=Screenshot+1" alt="Screenshot 1">
+                <img src="https://placehold.co/300x200/4CAF50/FFFFFF?text=Screenshot+2" alt="Screenshot 2">
+                <img src="https://placehold.co/300x200/4CAF50/FFFFFF?text=Screenshot+3" alt="Screenshot 3">
             </div>
         </section>
 
@@ -73,6 +400,282 @@
         <p>&copy; 2025 [Nome do Seu Servidor]. Todos os direitos reservados.</p>
     </footer>
 
-    <script src="script.js"></script>
+    <div id="messageBox" class="message-box"></div>
+
+    <script>
+        // Lógica JavaScript para o Frontend
+        document.addEventListener('DOMContentLoaded', () => {
+            const BASE_URL = 'http://localhost:3000'; // URL do seu backend Node.js
+
+            const postsContainer = document.getElementById('postsContainer');
+            const postForm = document.getElementById('postForm');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const loginLink = document.getElementById('loginLink');
+            const criarPostSection = document.getElementById('criar-post');
+            const authSection = document.getElementById('auth-section');
+            const usernameDisplay = document.getElementById('usernameDisplay');
+            const loginFormDiv = document.getElementById('login-form-div');
+            const registerFormDiv = document.getElementById('register-form-div');
+            const messageBox = document.getElementById('messageBox');
+
+            // --- Funções de Utilitário para Token e Username ---
+            function getToken() {
+                return localStorage.getItem('token');
+            }
+
+            function setToken(token) {
+                localStorage.setItem('token', token);
+            }
+
+            function removeToken() {
+                localStorage.removeItem('token');
+            }
+
+            function getUsername() {
+                return localStorage.getItem('username');
+            }
+
+            function setUsername(username) {
+                localStorage.setItem('username', username);
+            }
+
+            function removeUsername() {
+                localStorage.removeItem('username');
+            }
+
+            // --- Função para exibir mensagens ao usuário ---
+            function showMessage(message, type = 'success') {
+                messageBox.textContent = message;
+                messageBox.className = 'message-box show'; // Reseta classes e mostra
+                if (type === 'error') {
+                    messageBox.style.backgroundColor = '#dc3545'; // Vermelho para erro
+                } else {
+                    messageBox.style.backgroundColor = '#4CAF50'; // Verde para sucesso
+                }
+                setTimeout(() => {
+                    messageBox.classList.remove('show');
+                }, 3000); // Esconde após 3 segundos
+            }
+
+            // --- Função para atualizar a UI com base no status de autenticação ---
+            function updateUIForAuth() {
+                const token = getToken();
+                const username = getUsername();
+
+                if (token && username) {
+                    loginLink.style.display = 'none';
+                    logoutBtn.style.display = 'inline';
+                    criarPostSection.style.display = 'block'; // Mostra o formulário de postagem
+                    authSection.style.display = 'none'; // Esconde a seção de login/registro
+                    usernameDisplay.textContent = `Olá, ${username}!`;
+                } else {
+                    loginLink.style.display = 'inline';
+                    logoutBtn.style.display = 'none';
+                    criarPostSection.style.display = 'none'; // Esconde o formulário de postagem
+                    authSection.style.display = 'block'; // Mostra a seção de login/registro
+                    usernameDisplay.textContent = '';
+                }
+            }
+
+            // --- Função para buscar e exibir posts ---
+            async function fetchAndDisplayPosts() {
+                try {
+                    const response = await fetch(`${BASE_URL}/api/posts`);
+                    if (!response.ok) {
+                        throw new Error('Erro ao buscar posts');
+                    }
+                    const posts = await response.json();
+
+                    postsContainer.innerHTML = ''; // Limpa posts existentes
+
+                    if (posts.length === 0) {
+                        postsContainer.innerHTML = '<p>Nenhuma publicação ainda. Seja o primeiro a postar!</p>';
+                        return;
+                    }
+
+                    posts.forEach(post => {
+                        const postElement = document.createElement('div');
+                        postElement.classList.add('mural-post');
+                        const postDate = new Date(post.createdAt).toLocaleDateString('pt-BR'); // Formata a data
+
+                        let imageHtml = '';
+                        if (post.imageUrl) {
+                            imageHtml = `<img src="${post.imageUrl}" alt="${post.title}">`;
+                        }
+
+                        postElement.innerHTML = `
+                            <h3>${post.title}</h3>
+                            ${imageHtml}
+                            <p>${post.content}</p>
+                            <span class="post-data">Publicado por: ${post.author} em: ${postDate}</span>
+                        `;
+                        postsContainer.appendChild(postElement);
+                    });
+                } catch (error) {
+                    console.error('Erro ao buscar posts:', error);
+                    postsContainer.innerHTML = '<p>Não foi possível carregar as publicações. Verifique se o backend está rodando.</p>';
+                }
+            }
+
+            // --- Lógica de Postagem ---
+            if (postForm) {
+                postForm.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+
+                    const title = document.getElementById('postTitle').value;
+                    const content = document.getElementById('postContent').value;
+                    const imageFile = document.getElementById('postImage').files[0];
+
+                    if (!title || !content) {
+                        showMessage('Por favor, preencha o título e o conteúdo da postagem.', 'error');
+                        return;
+                    }
+
+                    const formData = new FormData();
+                    formData.append('title', title);
+                    formData.append('content', content);
+                    if (imageFile) {
+                        formData.append('image', imageFile); // 'image' deve ser o nome esperado pelo Multer no backend
+                    }
+
+                    try {
+                        const token = getToken();
+                        if (!token) {
+                            showMessage('Você precisa estar logado para fazer uma postagem.', 'error');
+                            updateUIForAuth(); // Redireciona para o login exibindo a seção
+                            return;
+                        }
+
+                        const response = await fetch(`${BASE_URL}/api/posts`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}` // Envia o token no cabeçalho
+                            },
+                            body: formData // FormData é usado para upload de arquivos
+                        });
+
+                        if (response.ok) {
+                            showMessage('Postagem criada com sucesso!');
+                            postForm.reset();
+                            fetchAndDisplayPosts(); // Recarrega os posts
+                        } else {
+                            const errorData = await response.json();
+                            showMessage(`Erro ao criar postagem: ${errorData.message || response.statusText}`, 'error');
+                        }
+                    } catch (error) {
+                        console.error('Erro na requisição de postagem:', error);
+                        showMessage('Não foi possível conectar ao servidor para criar a postagem.', 'error');
+                    }
+                });
+            }
+
+            // --- Lógica de Login ---
+            if (loginForm) {
+                loginForm.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+
+                    const username = document.getElementById('username').value;
+                    const password = document.getElementById('password').value;
+
+                    try {
+                        const response = await fetch(`${BASE_URL}/api/auth/login`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ username, password })
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            setToken(data.token); // Salva o token JWT
+                            setUsername(data.username); // Salva o nome de usuário
+                            showMessage('Login bem-sucedido!');
+                            updateUIForAuth(); // Atualiza a UI
+                            fetchAndDisplayPosts(); // Recarrega posts caso haja algum novo
+                        } else {
+                            const errorData = await response.json();
+                            showMessage(`Erro no login: ${errorData.message || response.statusText}`, 'error');
+                        }
+                    } catch (error) {
+                        console.error('Erro na requisição de login:', error);
+                        showMessage('Não foi possível conectar ao servidor para fazer login.', 'error');
+                    }
+                });
+            }
+
+            // --- Lógica de Registro ---
+            if (registerForm) {
+                registerForm.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+
+                    const username = document.getElementById('regUsername').value;
+                    const password = document.getElementById('regPassword').value;
+                    const confirmPassword = document.getElementById('regConfirmPassword').value;
+
+                    if (password !== confirmPassword) {
+                        showMessage('As senhas não coincidem!', 'error');
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(`${BASE_URL}/api/auth/register`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ username, password })
+                        });
+
+                        if (response.ok) {
+                            showMessage('Registro bem-sucedido! Agora você pode fazer login.');
+                            // Alterna para o formulário de login após o registro
+                            loginFormDiv.style.display = 'block';
+                            registerFormDiv.style.display = 'none';
+                            registerForm.reset(); // Limpa o formulário de registro
+                        } else {
+                            const errorData = await response.json();
+                            showMessage(`Erro no registro: ${errorData.message || response.statusText}`, 'error');
+                        }
+                    } catch (error) {
+                        console.error('Erro na requisição de registro:', error);
+                        showMessage('Não foi possível conectar ao servidor para registrar.', 'error');
+                    }
+                });
+            }
+
+            // --- Lógica de Logout ---
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    removeToken();
+                    removeUsername();
+                    showMessage('Você foi desconectado.');
+                    updateUIForAuth(); // Atualiza a UI imediatamente
+                    fetchAndDisplayPosts(); // Recarrega posts para refletir o estado de não logado
+                });
+            }
+
+            // --- Lógica para alternar entre formulários de Login e Registro ---
+            document.querySelectorAll('.toggle-form-link').forEach(link => {
+                link.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const targetForm = event.target.dataset.form;
+                    if (targetForm === 'login') {
+                        loginFormDiv.style.display = 'block';
+                        registerFormDiv.style.display = 'none';
+                    } else if (targetForm === 'register') {
+                        loginFormDiv.style.display = 'none';
+                        registerFormDiv.style.display = 'block';
+                    }
+                });
+            });
+
+            // --- Inicialização ---
+            fetchAndDisplayPosts(); // Carrega os posts ao iniciar
+            updateUIForAuth(); // Atualiza a UI com base no status de autenticação
+        });
+    </script>
 </body>
 </html>
